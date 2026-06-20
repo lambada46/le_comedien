@@ -5,13 +5,13 @@ type Show = {
   name: string;
 };
 
-interface Props {
-  shows: Show[];
-}
-
-export default function ShowList({ shows }: Props) {
+export default function ShowList({ shows }: { shows: Show[] }) {
   if (shows.length === 0) {
-    return <p className="text-zinc-500">No shows yet / Aucun spectacle</p>;
+    return (
+      <p className="text-zinc-500">
+        No shows yet / Aucun spectacle pour le moment
+      </p>
+    );
   }
 
   return (

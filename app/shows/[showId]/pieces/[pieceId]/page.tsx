@@ -1,32 +1,22 @@
-import ShowWorkspace, {
-  type CandidateScore,
+import Link from "next/link";
+import PieceDetailWorkspace from "@/components/shows/piece-detail-workspace";
+import {
   type PieceObjectAssignment,
   type PiecePerformer,
   type ShowMember,
   type ShowObjectInstance,
-  type Transition,
 } from "@/components/shows/show-workspace";
 import { supabase } from "@/lib/supabase/client";
 
 type PageProps = {
   params: Promise<{
     showId: string;
+    pieceId: string;
   }>;
 };
 
-type Piece = {
-  id: string;
-  name: string;
-  order_index: number;
-};
-
-type Show = {
-  id: string;
-  name: string;
-};
-
-export default async function ShowPage({ params }: PageProps) {
-  const { showId } = await params;
+export default async function PiecePage({ params }: PageProps) {
+  const { showId, pieceId } = await params;
 
   const { data: show, error: showError } = await supabase
     .from("shows")
@@ -34,33 +24,12 @@ export default async function ShowPage({ params }: PageProps) {
     .eq("id", showId)
     .single();
 
-  const { data: pieces, error: piecesError } = await supabase
+  const { data: piece, error: pieceError } = await supabase
     .from("pieces")
     .select("id, name, order_index")
+    .eq("id", pieceId)
     .eq("show_id", showId)
-    .order("order_index");
-
-  const { data: transitions, error: transitionsError } = await supabase
-    .from("transitions")
-    .select(
-      `
-      id,
-      order_index,
-      transition_type,
-      from_piece_id,
-      to_piece_id,
-      from_piece:from_piece_id(name),
-      to_piece:to_piece_id(name),
-      actions (
-        id,
-        name,
-        action_type,
-        order_index
-      )
-    `,
-    )
-    .eq("show_id", showId)
-    .order("order_index");
+    .single();
 
   const { data: showMembers, error: showMembersError } = await supabase
     .from("show_members")
@@ -99,45 +68,45 @@ export default async function ShowPage({ params }: PageProps) {
       )
       .eq("show_id", showId);
 
-  const pieceIds = (pieces ?? []).map((piece) => piece.id);
+  const { data: incidents, error: incidentsError } = await supabase
+    .from("incidents")
+    .select("id, name")
+    .order("name");
 
-  const { data: piecePerformers, error: piecePerformersError } =
-    pieceIds.length > 0
-      ? await supabase
-          .from("piece_performers")
-          .select("piece_id, user_id")
-          .in("piece_id", pieceIds)
-      : { data: [], error: null };
+  const { data: piecePerformers, error: piecePerformersError } = await supabase
+    .from("piece_performers")
+    .select("piece_id, user_id")
+    .eq("piece_id", pieceId);
 
   const { data: pieceObjectAssignments, error: pieceObjectAssignmentsError } =
-    pieceIds.length > 0
-      ? await supabase
-          .from("piece_object_instances")
-          .select("id, piece_id, object_instance_id, position_notes")
-          .in("piece_id", pieceIds)
-      : { data: [], error: null };
+    await supabase
+      .from("piece_object_instances")
+      .select("id, piece_id, object_instance_id, position_notes")
+      .eq("piece_id", pieceId);
 
-  const typedTransitions = ((transitions ?? []) as unknown as RawTransition[]).map(
-    (transition) => ({
-      ...transition,
-      from_piece: getRelatedPiece(transition.from_piece),
-      to_piece: getRelatedPiece(transition.to_piece),
-    }),
-  );
-  const actionIds = typedTransitions.flatMap((transition) =>
-    transition.actions.map((action) => action.id),
-  );
+  const { data: pieceIncidents, error: pieceIncidentsError } = await supabase
+    .from("piece_incidents")
+    .select("piece_id, incident_id")
+    .eq("piece_id", pieceId);
 
-  const { data: candidateScores } =
-    actionIds.length > 0
-      ? await supabase
-          .from("action_candidate_scores")
-          .select(
-            "action_id, action_name, user_id, user_name, state, available, unavailable_reason, score",
-          )
-          .in("action_id", actionIds)
-          .order("score", { ascending: false })
-      : { data: [] };
+  if (
+    showError ||
+    pieceError ||
+    showMembersError ||
+    showObjectInstancesError ||
+    incidentsError ||
+    piecePerformersError ||
+    pieceObjectAssignmentsError ||
+    pieceIncidentsError ||
+    !show ||
+    !piece
+  ) {
+    return (
+      <main className="p-8">
+        <p>Error loading piece</p>
+      </main>
+    );
+  }
 
   const typedShowMembers = (
     (showMembers ?? []) as unknown as RawShowMember[]
@@ -155,54 +124,33 @@ export default async function ShowPage({ params }: PageProps) {
     ),
   }));
 
-  if (
-    showError ||
-    piecesError ||
-    transitionsError ||
-    showMembersError ||
-    showObjectInstancesError ||
-    piecePerformersError ||
-    pieceObjectAssignmentsError ||
-    !show
-  ) {
-    return (
-      <main className="p-8">
-        <p>Error loading show / Erreur de chargement</p>
-      </main>
-    );
-  }
-
   return (
     <main className="mx-auto max-w-5xl space-y-8 p-8">
-      <ShowWorkspace
-        show={show as Show}
-        pieces={(pieces ?? []) as Piece[]}
-        transitions={typedTransitions}
-        candidateScores={(candidateScores ?? []) as CandidateScore[]}
+      <Link
+        href={`/shows/${show.id}`}
+        className="text-sm text-zinc-500 hover:underline"
+      >
+        Back
+      </Link>
+
+      <header>
+        <p className="text-sm text-zinc-500">{show.name}</p>
+        <h1 className="text-3xl font-bold">{piece.name}</h1>
+      </header>
+
+      <PieceDetailWorkspace
+        piece={piece}
         members={typedShowMembers}
         objectInstances={typedShowObjectInstances}
+        incidents={incidents ?? []}
         piecePerformers={(piecePerformers ?? []) as PiecePerformer[]}
         pieceObjectAssignments={
           (pieceObjectAssignments ?? []) as PieceObjectAssignment[]
         }
+        pieceIncidents={pieceIncidents ?? []}
       />
     </main>
   );
-}
-
-type RawTransition = Omit<Transition, "from_piece" | "to_piece"> & {
-  from_piece: { name: string } | { name: string }[] | null;
-  to_piece: { name: string } | { name: string }[] | null;
-};
-
-function getRelatedPiece(
-  piece: { name: string } | { name: string }[] | null,
-): { name: string } | null {
-  if (Array.isArray(piece)) {
-    return piece[0] ?? null;
-  }
-
-  return piece;
 }
 
 type RawShowMember = Omit<ShowMember, "user"> & {
