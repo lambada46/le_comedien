@@ -85,8 +85,8 @@ export default function PieceDetailWorkspace({
 
   return (
     <div className="space-y-6">
-      <nav className="flex flex-wrap items-center justify-between gap-3 border-b pb-3">
-        <div className="flex flex-wrap gap-2">
+      <nav className="rounded-2xl border border-stone-200 bg-white p-2 shadow-sm">
+        <div className="grid gap-2 sm:grid-cols-3">
           <TabButton
             isActive={activeTab === "members"}
             onClick={() => setActiveTab("members")}
@@ -106,19 +106,21 @@ export default function PieceDetailWorkspace({
             {t.incidents}
           </TabButton>
         </div>
+      </nav>
 
-        <label className="flex items-center gap-2 text-sm text-zinc-500">
+      <div className="flex justify-end">
+        <label className="flex items-center gap-2 text-sm text-stone-500">
           {t.language}
           <select
             value={locale}
             onChange={(event) => setLocale(event.target.value as Locale)}
-            className="rounded-lg border px-3 py-2 text-sm text-foreground"
+            className="h-10 rounded-xl border border-stone-300 bg-white px-3 text-sm text-stone-950 outline-none transition focus:border-stone-500 focus:ring-4 focus:ring-stone-200"
           >
             <option value="en">English</option>
             <option value="fr">Français</option>
           </select>
         </label>
-      </nav>
+      </div>
 
       {activeTab === "members" && (
         <PieceMembers
@@ -163,8 +165,10 @@ function TabButton({
     <button
       type="button"
       onClick={onClick}
-      className={`rounded-lg px-3 py-2 text-sm ${
-        isActive ? "bg-black text-white" : "border text-zinc-600"
+      className={`rounded-xl px-4 py-3 text-sm font-medium transition ${
+        isActive
+          ? "bg-stone-950 text-white shadow-sm"
+          : "text-stone-600 hover:bg-stone-100 hover:text-stone-950"
       }`}
     >
       {children}
@@ -198,7 +202,7 @@ function PieceMembers({
 
   if (performerMembers.length === 0) {
     return (
-      <p className="rounded-lg border border-dashed p-4 text-sm text-zinc-500">
+      <p className="rounded-2xl border border-dashed border-stone-300 bg-white p-8 text-center text-sm text-stone-500 shadow-sm">
         {emptyText}
       </p>
     );
@@ -253,7 +257,7 @@ function PieceObjects({
 
   if (objectInstances.length === 0) {
     return (
-      <p className="rounded-lg border border-dashed p-4 text-sm text-zinc-500">
+      <p className="rounded-2xl border border-dashed border-stone-300 bg-white p-8 text-center text-sm text-stone-500 shadow-sm">
         {emptyText}
       </p>
     );
@@ -352,25 +356,28 @@ function PieceIncidents({
 
   return (
     <div className="space-y-4">
-      <form onSubmit={createIncident} className="flex flex-wrap gap-2">
+      <form
+        onSubmit={createIncident}
+        className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm sm:grid sm:grid-cols-[1fr_auto] sm:gap-2"
+      >
         <input
           value={name}
           onChange={(event) => setName(event.target.value)}
           placeholder={t.incidentName}
-          className="min-w-64 rounded-lg border px-3 py-2 text-sm"
+          className="h-10 rounded-xl border border-stone-300 bg-white px-3 text-sm outline-none transition focus:border-stone-500 focus:ring-4 focus:ring-stone-200"
         />
         <button
           type="submit"
           disabled={isSaving}
-          className="rounded-lg bg-black px-3 py-2 text-sm text-white disabled:opacity-50"
+          className="mt-2 h-10 rounded-xl bg-stone-950 px-4 text-sm font-medium text-white transition hover:bg-stone-800 disabled:opacity-50 sm:mt-0"
         >
           {isSaving ? t.adding : t.addIncident}
         </button>
-        {error && <p className="basis-full text-sm text-red-600">{error}</p>}
+        {error && <p className="text-sm text-red-600 sm:col-span-2">{error}</p>}
       </form>
 
       {incidents.length === 0 ? (
-        <p className="rounded-lg border border-dashed p-4 text-sm text-zinc-500">
+        <p className="rounded-2xl border border-dashed border-stone-300 bg-white p-8 text-center text-sm text-stone-500 shadow-sm">
           {t.noIncidents}
         </p>
       ) : (
@@ -413,13 +420,21 @@ function CheckboxList({
 
   return (
     <div className="space-y-3">
-      <div className="grid gap-2 sm:grid-cols-2">
+      <div className="grid gap-3 sm:grid-cols-2">
         {items.map((item) => (
-          <label key={item.id} className="flex items-center gap-2 text-sm">
+          <label
+            key={item.id}
+            className={`flex items-center gap-3 rounded-2xl border p-4 text-sm shadow-sm transition ${
+              item.checked
+                ? "border-stone-900 bg-white text-stone-950"
+                : "border-stone-200 bg-white text-stone-600 hover:border-stone-300"
+            }`}
+          >
             <input
               type="checkbox"
               checked={item.checked}
               disabled={savingId === item.id}
+              className="h-4 w-4 accent-stone-950"
               onChange={async (event) => {
                 setSavingId(item.id);
                 setError(null);
@@ -439,7 +454,7 @@ function CheckboxList({
                 router.refresh();
               }}
             />
-            {item.label}
+            <span className="font-medium">{item.label}</span>
           </label>
         ))}
       </div>

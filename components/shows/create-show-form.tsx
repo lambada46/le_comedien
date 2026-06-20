@@ -42,23 +42,23 @@ export default function CreateShowForm() {
   }
 
   return (
-    <form onSubmit={createShow} className="mb-8 flex gap-3">
+    <form onSubmit={createShow} className="mb-6 grid gap-3 sm:grid-cols-[1fr_auto]">
       <input
         value={name}
         onChange={(event) => setName(event.target.value)}
         placeholder="Show name / Nom du spectacle"
-        className="flex-1 rounded-lg border px-4 py-2"
+        className="h-11 rounded-xl border border-stone-300 bg-white px-4 text-sm outline-none transition focus:border-stone-500 focus:ring-4 focus:ring-stone-200"
       />
 
       <button
         type="submit"
         disabled={isCreating}
-        className="rounded-lg bg-black px-4 py-2 text-white disabled:opacity-50"
+        className="h-11 rounded-xl bg-stone-950 px-5 text-sm font-medium text-white transition hover:bg-stone-800 disabled:opacity-50"
       >
         {isCreating ? "Creating..." : "+ New Show"}
       </button>
 
-      {error && <p className="text-red-500">{error}</p>}
+      {error && <p className="text-sm text-red-600 sm:col-span-2">{error}</p>}
     </form>
   );
 }

@@ -131,11 +131,15 @@ const copy = {
     noObjects: "No objects yet",
     addObject: "Add object",
     objectType: "Type, ex: Chair",
+    quantity: "Quantity",
     category: "Category",
-    physicalLabel: "Physical label",
+    newCategory: "New category",
+    createCategory: "Create category",
+    selectCategory: "Select category",
     uncategorized: "Uncategorized",
     unnamed: "Unnamed",
     unknownType: "Unknown type",
+    instances: "physical objects",
   },
   fr: {
     back: "Retour",
@@ -161,11 +165,15 @@ const copy = {
     noObjects: "Aucun objet pour le moment",
     addObject: "Ajouter un objet",
     objectType: "Type, ex: Chaise",
+    quantity: "Quantité",
     category: "Catégorie",
-    physicalLabel: "Nom physique",
+    newCategory: "Nouvelle catégorie",
+    createCategory: "Créer catégorie",
+    selectCategory: "Choisir catégorie",
     uncategorized: "Sans catégorie",
     unnamed: "Sans nom",
     unknownType: "Type inconnu",
+    instances: "objets physiques",
   },
 };
 
@@ -181,18 +189,37 @@ export default function ShowWorkspace({
 
   return (
     <div className="space-y-8">
-      <header className="space-y-3">
-        <Link href="/" className="text-sm text-zinc-500 hover:underline">
+      <header className="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm">
+        <Link href="/" className="text-sm font-medium text-stone-500 hover:text-stone-950">
           {t.back}
         </Link>
-        <div>
-          <h1 className="text-3xl font-bold">{show.name}</h1>
-          <p className="text-zinc-500">{t.showOverview}</p>
+        <div className="mt-5 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="mb-2 text-xs font-medium uppercase tracking-[0.18em] text-stone-500">
+              Le Comédien
+            </p>
+            <h1 className="text-4xl font-semibold tracking-tight text-stone-950">
+              {show.name}
+            </h1>
+            <p className="mt-2 text-stone-500">{t.showOverview}</p>
+          </div>
+
+          <label className="flex items-center gap-2 text-sm text-stone-500">
+            {t.language}
+            <select
+              value={locale}
+              onChange={(event) => setLocale(event.target.value as Locale)}
+              className="h-10 rounded-xl border border-stone-300 bg-white px-3 text-sm text-stone-950 outline-none transition focus:border-stone-500 focus:ring-4 focus:ring-stone-200"
+            >
+              <option value="en">English</option>
+              <option value="fr">Français</option>
+            </select>
+          </label>
         </div>
       </header>
 
-      <nav className="flex flex-wrap items-center justify-between gap-3 border-b pb-3">
-        <div className="flex flex-wrap gap-2">
+      <nav className="rounded-2xl border border-stone-200 bg-white p-2 shadow-sm">
+        <div className="grid gap-2 sm:grid-cols-3">
           <TabButton
             isActive={activeTab === "pieces"}
             onClick={() => setActiveTab("pieces")}
@@ -212,18 +239,6 @@ export default function ShowWorkspace({
             {t.objects}
           </TabButton>
         </div>
-
-        <label className="flex items-center gap-2 text-sm text-zinc-500">
-          {t.language}
-          <select
-            value={locale}
-            onChange={(event) => setLocale(event.target.value as Locale)}
-            className="rounded-lg border px-3 py-2 text-sm text-foreground"
-          >
-            <option value="en">English</option>
-            <option value="fr">Français</option>
-          </select>
-        </label>
       </nav>
 
       {activeTab === "pieces" && (
@@ -262,8 +277,10 @@ function TabButton({
     <button
       type="button"
       onClick={onClick}
-      className={`rounded-lg px-3 py-2 text-sm ${
-        isActive ? "bg-black text-white" : "border text-zinc-600"
+      className={`rounded-xl px-4 py-3 text-sm font-medium transition ${
+        isActive
+          ? "bg-stone-950 text-white shadow-sm"
+          : "text-stone-600 hover:bg-stone-100 hover:text-stone-950"
       }`}
     >
       {children}
@@ -283,18 +300,20 @@ function PiecesTab({
   const t = copy[locale];
 
   return (
-    <section className="space-y-3">
-      <div className="flex flex-wrap items-end justify-between gap-4">
+    <section className="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm">
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h2 className="text-xl font-semibold">{t.pieces}</h2>
-          <p className="text-sm text-zinc-500">{t.runningOrder}</p>
+          <h2 className="text-2xl font-semibold tracking-tight text-stone-950">
+            {t.pieces}
+          </h2>
+          <p className="mt-1 text-sm text-stone-500">{t.runningOrder}</p>
         </div>
 
         <CreatePieceForm showId={show.id} locale={locale} />
       </div>
 
       {pieces.length === 0 ? (
-        <p className="rounded-lg border border-dashed p-4 text-sm text-zinc-500">
+        <p className="rounded-2xl border border-dashed border-stone-300 bg-stone-50 p-8 text-center text-sm text-stone-500">
           {t.noPieces}
         </p>
       ) : (
@@ -408,13 +427,15 @@ function PieceCard({
   }
 
   return (
-    <div className="space-y-4 rounded-lg border p-4">
+    <div className="rounded-2xl border border-stone-200 bg-stone-50/60 p-4">
       <form onSubmit={updatePiece} className="grid gap-3">
         <div className="flex items-center justify-between gap-3">
-          <span className="text-sm text-zinc-500">#{piece.order_index}</span>
+          <span className="rounded-full bg-white px-3 py-1 text-xs font-medium text-stone-500">
+            #{piece.order_index}
+          </span>
           <Link
             href={`/shows/${showId}/pieces/${piece.id}`}
-            className="text-sm text-zinc-500 hover:underline"
+            className="text-sm font-medium text-stone-500 hover:text-stone-950"
           >
             {t.details}
           </Link>
@@ -423,16 +444,16 @@ function PieceCard({
         <input
           value={name}
           onChange={(event) => setName(event.target.value)}
-          className="rounded-lg border px-3 py-2 text-sm"
+          className="h-10 rounded-xl border border-stone-300 bg-white px-3 text-sm outline-none transition focus:border-stone-500 focus:ring-4 focus:ring-stone-200"
         />
-        <label className="grid gap-1 text-sm text-zinc-500">
+        <label className="grid gap-1 text-sm text-stone-500">
           {t.order}
           <input
             type="number"
             min="1"
             value={orderIndex}
             onChange={(event) => setOrderIndex(event.target.value)}
-            className="rounded-lg border px-3 py-2 text-sm text-foreground"
+            className="h-10 rounded-xl border border-stone-300 bg-white px-3 text-sm text-stone-950 outline-none transition focus:border-stone-500 focus:ring-4 focus:ring-stone-200"
           />
         </label>
 
@@ -440,7 +461,7 @@ function PieceCard({
           <button
             type="submit"
             disabled={isSaving}
-            className="rounded-lg bg-black px-3 py-2 text-sm text-white disabled:opacity-50"
+            className="rounded-xl bg-stone-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-stone-800 disabled:opacity-50"
           >
             {t.edit}
           </button>
@@ -448,14 +469,14 @@ function PieceCard({
             type="button"
             disabled={isSaving}
             onClick={deletePiece}
-            className="rounded-lg border px-3 py-2 text-sm text-red-600 disabled:opacity-50"
+            className="rounded-xl border border-red-200 bg-white px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50 disabled:opacity-50"
           >
             {t.delete}
           </button>
         </div>
       </form>
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
     </div>
   );
 }
@@ -472,28 +493,33 @@ function MembersTab({
   const t = copy[locale];
 
   return (
-    <section className="space-y-3">
-      <div className="flex flex-wrap items-end justify-between gap-4">
+    <section className="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm">
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h2 className="text-xl font-semibold">{t.members}</h2>
-          <p className="text-sm text-zinc-500">{t.membersSubtitle}</p>
+          <h2 className="text-2xl font-semibold tracking-tight text-stone-950">
+            {t.members}
+          </h2>
+          <p className="mt-1 text-sm text-stone-500">{t.membersSubtitle}</p>
         </div>
 
         <CreateMemberForm showId={show.id} locale={locale} />
       </div>
 
       {members.length === 0 ? (
-        <p className="rounded-lg border border-dashed p-4 text-sm text-zinc-500">
+        <p className="rounded-2xl border border-dashed border-stone-300 bg-stone-50 p-8 text-center text-sm text-stone-500">
           {t.noMembers}
         </p>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2">
           {members.map((member) => (
-            <div key={member.user_id} className="rounded-lg border p-4">
-              <h3 className="font-medium">
+            <div
+              key={member.user_id}
+              className="rounded-2xl border border-stone-200 bg-stone-50/60 p-5"
+            >
+              <h3 className="font-semibold text-stone-950">
                 {member.user?.name ?? "Unnamed / Sans nom"}
               </h3>
-              <p className="text-sm text-zinc-500">
+              <p className="mt-1 text-sm capitalize text-stone-500">
                 {member.role ?? "performer"}
               </p>
             </div>
@@ -514,65 +540,104 @@ function ObjectsTab({
   locale: Locale;
 }) {
   const t = copy[locale];
-  const objectsByCategory = useMemo(() => {
-    return objectInstances.reduce<Record<string, ShowObjectInstance[]>>(
-      (groups, objectInstance) => {
-        const category =
-          objectInstance.object_instance?.object?.category?.trim() ||
-          t.uncategorized;
+  const [extraCategories, setExtraCategories] = useState<string[]>([]);
+  const objectGroupsByCategory = useMemo(() => {
+    const groupsByObject = objectInstances.reduce<Record<string, ObjectGroup>>(
+      (groups, showObjectInstance) => {
+        const object = showObjectInstance.object_instance?.object;
+        if (!object) return groups;
+
+        groups[object.id] = groups[object.id] ?? {
+          objectId: object.id,
+          name: object.name,
+          category: object.category,
+          instances: [],
+        };
+        groups[object.id].instances.push(showObjectInstance);
+        return groups;
+      },
+      {},
+    );
+
+    return Object.values(groupsByObject).reduce<Record<string, ObjectGroup[]>>(
+      (groups, objectGroup) => {
+        const category = objectGroup.category?.trim() || t.uncategorized;
 
         groups[category] = groups[category] ?? [];
-        groups[category].push(objectInstance);
+        groups[category].push(objectGroup);
         return groups;
       },
       {},
     );
   }, [objectInstances, t.uncategorized]);
 
-  const categories = Object.keys(objectsByCategory).sort((a, b) =>
+  const categories = Object.keys(objectGroupsByCategory).sort((a, b) =>
     a.localeCompare(b),
+  );
+  const categoryOptions = Array.from(
+    new Set(
+      [
+        ...objectInstances
+          .map((objectInstance) =>
+            objectInstance.object_instance?.object?.category?.trim(),
+          )
+          .filter((category): category is string => Boolean(category)),
+        ...extraCategories,
+      ].sort((a, b) => a.localeCompare(b)),
+    ),
   );
 
   return (
-    <section className="space-y-3">
-      <div className="flex flex-wrap items-end justify-between gap-4">
+    <section className="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm">
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h2 className="text-xl font-semibold">{t.objects}</h2>
-          <p className="text-sm text-zinc-500">{t.objectsSubtitle}</p>
+          <h2 className="text-2xl font-semibold tracking-tight text-stone-950">
+            {t.objects}
+          </h2>
+          <p className="mt-1 text-sm text-stone-500">{t.objectsSubtitle}</p>
         </div>
 
-        <CreateObjectForm showId={show.id} locale={locale} />
+        <CreateObjectForm
+          showId={show.id}
+          locale={locale}
+          categories={categoryOptions}
+          onCreateCategory={(category) =>
+            setExtraCategories((currentCategories) =>
+              currentCategories.includes(category)
+                ? currentCategories
+                : [...currentCategories, category],
+            )
+          }
+        />
       </div>
 
       {categories.length === 0 ? (
-        <p className="rounded-lg border border-dashed p-4 text-sm text-zinc-500">
+        <p className="rounded-2xl border border-dashed border-stone-300 bg-stone-50 p-8 text-center text-sm text-stone-500">
           {t.noObjects}
         </p>
       ) : (
         <div className="space-y-6">
           {categories.map((category) => (
             <div key={category} className="space-y-2">
-              <h3 className="font-semibold">{category}</h3>
+              <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-stone-500">
+                {category}
+              </h3>
               <div className="grid gap-3 sm:grid-cols-2">
-                {objectsByCategory[category].map((showObjectInstance) => (
-                  <div
-                    key={showObjectInstance.id}
-                    className="rounded-lg border p-4"
-                  >
-                    <p className="font-medium">
-                      {showObjectInstance.object_instance?.label ??
-                        t.unnamed}
-                    </p>
-                    <p className="text-sm text-zinc-500">
-                      {showObjectInstance.object_instance?.object?.name ??
-                        t.unknownType}
-                    </p>
-                    {showObjectInstance.object_instance?.status && (
-                      <p className="mt-2 text-xs uppercase tracking-wide text-zinc-500">
-                        {showObjectInstance.object_instance.status}
-                      </p>
-                    )}
-                  </div>
+                {objectGroupsByCategory[category].map((objectGroup) => (
+                  <ObjectGroupCard
+                    key={objectGroup.objectId}
+                    showId={show.id}
+                    objectGroup={objectGroup}
+                    locale={locale}
+                    categories={categoryOptions}
+                    onCreateCategory={(category) =>
+                      setExtraCategories((currentCategories) =>
+                        currentCategories.includes(category)
+                          ? currentCategories
+                          : [...currentCategories, category],
+                      )
+                    }
+                  />
                 ))}
               </div>
             </div>
@@ -580,6 +645,243 @@ function ObjectsTab({
         </div>
       )}
     </section>
+  );
+}
+
+type ObjectGroup = {
+  objectId: string;
+  name: string;
+  category: string | null;
+  instances: ShowObjectInstance[];
+};
+
+function ObjectGroupCard({
+  showId,
+  objectGroup,
+  locale,
+  categories,
+  onCreateCategory,
+}: {
+  showId: string;
+  objectGroup: ObjectGroup;
+  locale: Locale;
+  categories: string[];
+  onCreateCategory: (category: string) => void;
+}) {
+  const router = useRouter();
+  const t = copy[locale];
+  const [name, setName] = useState(objectGroup.name);
+  const [category, setCategory] = useState(objectGroup.category ?? "");
+  const [quantity, setQuantity] = useState(String(objectGroup.instances.length));
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function updateObject(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const trimmedName = name.trim();
+    const trimmedCategory = category.trim();
+    const nextQuantity = Number(quantity);
+
+    if (!trimmedName || !Number.isInteger(nextQuantity) || nextQuantity < 1) {
+      return;
+    }
+
+    setIsSaving(true);
+    setError(null);
+
+    const { error: objectError } = await supabase
+      .from("objects")
+      .update({
+        name: trimmedName,
+        category: trimmedCategory || null,
+      })
+      .eq("id", objectGroup.objectId);
+
+    if (objectError) {
+      setError(objectError.message);
+      setIsSaving(false);
+      return;
+    }
+
+    const quantityError = await reconcileObjectQuantity(
+      showId,
+      objectGroup,
+      trimmedName,
+      nextQuantity,
+    );
+
+    setIsSaving(false);
+
+    if (quantityError) {
+      setError(quantityError);
+      return;
+    }
+
+    router.refresh();
+  }
+
+  async function deleteObject() {
+    setIsSaving(true);
+    setError(null);
+
+    const deleteError = await deleteObjectGroup(objectGroup);
+
+    setIsSaving(false);
+
+    if (deleteError) {
+      setError(deleteError);
+      return;
+    }
+
+    router.refresh();
+  }
+
+  return (
+    <div className="rounded-2xl border border-stone-200 bg-stone-50/60 p-4">
+      <form onSubmit={updateObject} className="grid gap-3">
+        <input
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          className="h-10 rounded-xl border border-stone-300 bg-white px-3 text-sm outline-none transition focus:border-stone-500 focus:ring-4 focus:ring-stone-200"
+        />
+        <CategoryPicker
+          category={category}
+          categories={categories}
+          locale={locale}
+          onCategoryChange={setCategory}
+          onCreateCategory={onCreateCategory}
+        />
+        <label className="grid gap-1 text-sm text-stone-500">
+          {t.quantity}
+          <input
+            type="number"
+            min="1"
+            value={quantity}
+            onChange={(event) => setQuantity(event.target.value)}
+            className="h-10 rounded-xl border border-stone-300 bg-white px-3 text-sm text-stone-950 outline-none transition focus:border-stone-500 focus:ring-4 focus:ring-stone-200"
+          />
+        </label>
+
+        <p className="text-sm text-stone-500">
+          {objectGroup.instances.length} {t.instances}
+        </p>
+
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="submit"
+            disabled={isSaving}
+            className="rounded-xl bg-stone-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-stone-800 disabled:opacity-50"
+          >
+            {t.edit}
+          </button>
+          <button
+            type="button"
+            disabled={isSaving}
+            onClick={deleteObject}
+            className="rounded-xl border border-red-200 bg-white px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50 disabled:opacity-50"
+          >
+            {t.delete}
+          </button>
+        </div>
+      </form>
+
+      <div className="flex flex-wrap gap-2">
+        {objectGroup.instances.map((showObjectInstance) => (
+          <span
+            key={showObjectInstance.id}
+            className="rounded-full border border-stone-200 bg-white px-3 py-1 text-xs text-stone-600"
+          >
+            {showObjectInstance.object_instance?.label ?? t.unnamed}
+          </span>
+        ))}
+      </div>
+
+      {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
+    </div>
+  );
+}
+
+function CategoryPicker({
+  category,
+  categories,
+  locale,
+  onCategoryChange,
+  onCreateCategory,
+}: {
+  category: string;
+  categories: string[];
+  locale: Locale;
+  onCategoryChange: (category: string) => void;
+  onCreateCategory: (category: string) => void;
+}) {
+  const t = copy[locale];
+  const [isCreating, setIsCreating] = useState(false);
+  const [newCategory, setNewCategory] = useState("");
+  const normalizedCategories = Array.from(
+    new Set(
+      [
+        ...categories,
+        category.trim() && !categories.includes(category.trim())
+          ? category.trim()
+          : "",
+      ]
+        .filter(Boolean)
+        .sort((a, b) => a.localeCompare(b)),
+    ),
+  );
+
+  function createCategory() {
+    const trimmedCategory = newCategory.trim();
+    if (!trimmedCategory) return;
+
+    onCreateCategory(trimmedCategory);
+    onCategoryChange(trimmedCategory);
+    setNewCategory("");
+    setIsCreating(false);
+  }
+
+  return (
+    <div className="grid gap-2">
+      <select
+        value={category}
+        onChange={(event) => onCategoryChange(event.target.value)}
+        className="h-10 rounded-xl border border-stone-300 bg-white px-3 text-sm outline-none transition focus:border-stone-500 focus:ring-4 focus:ring-stone-200"
+      >
+        <option value="">{t.selectCategory}</option>
+        {normalizedCategories.map((categoryOption) => (
+          <option key={categoryOption} value={categoryOption}>
+            {categoryOption}
+          </option>
+        ))}
+      </select>
+
+      {isCreating ? (
+        <div className="flex gap-2">
+          <input
+            value={newCategory}
+            onChange={(event) => setNewCategory(event.target.value)}
+            placeholder={t.newCategory}
+            className="min-w-0 flex-1 rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm outline-none transition focus:border-stone-500 focus:ring-4 focus:ring-stone-200"
+          />
+          <button
+            type="button"
+            onClick={createCategory}
+            className="rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm font-medium transition hover:bg-stone-50"
+          >
+            {t.createCategory}
+          </button>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setIsCreating(true)}
+          className="justify-self-start text-sm font-medium text-stone-500 hover:text-stone-950"
+        >
+          {t.newCategory}
+        </button>
+      )}
+    </div>
   );
 }
 
@@ -640,24 +942,24 @@ function CreateMemberForm({
   }
 
   return (
-    <form onSubmit={createMember} className="flex flex-wrap gap-2">
+    <form onSubmit={createMember} className="grid gap-2 sm:grid-cols-[1fr_1fr_auto_auto]">
       <input
         value={name}
         onChange={(event) => setName(event.target.value)}
         placeholder={t.name}
-        className="min-w-64 rounded-lg border px-3 py-2 text-sm"
+        className="h-10 rounded-xl border border-stone-300 bg-white px-3 text-sm outline-none transition focus:border-stone-500 focus:ring-4 focus:ring-stone-200"
       />
       <input
         type="email"
         value={email}
         onChange={(event) => setEmail(event.target.value)}
         placeholder="Email"
-        className="min-w-64 rounded-lg border px-3 py-2 text-sm"
+        className="h-10 rounded-xl border border-stone-300 bg-white px-3 text-sm outline-none transition focus:border-stone-500 focus:ring-4 focus:ring-stone-200"
       />
       <select
         value={role}
         onChange={(event) => setRole(event.target.value as MemberRole)}
-        className="rounded-lg border px-3 py-2 text-sm"
+        className="h-10 rounded-xl border border-stone-300 bg-white px-3 text-sm outline-none transition focus:border-stone-500 focus:ring-4 focus:ring-stone-200"
       >
         <option value="performer">performer</option>
         <option value="manager">manager</option>
@@ -665,11 +967,11 @@ function CreateMemberForm({
       <button
         type="submit"
         disabled={isSaving}
-        className="rounded-lg bg-black px-3 py-2 text-sm text-white disabled:opacity-50"
+        className="h-10 rounded-xl bg-stone-950 px-4 text-sm font-medium text-white transition hover:bg-stone-800 disabled:opacity-50"
       >
         {isSaving ? t.adding : t.addMember}
       </button>
-      {error && <p className="basis-full text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-red-600 sm:col-span-4">{error}</p>}
     </form>
   );
 }
@@ -677,15 +979,19 @@ function CreateMemberForm({
 function CreateObjectForm({
   showId,
   locale,
+  categories,
+  onCreateCategory,
 }: {
   showId: string;
   locale: Locale;
+  categories: string[];
+  onCreateCategory: (category: string) => void;
 }) {
   const router = useRouter();
   const t = copy[locale];
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
-  const [label, setLabel] = useState("");
+  const [quantity, setQuantity] = useState("1");
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -694,9 +1000,15 @@ function CreateObjectForm({
 
     const trimmedName = name.trim();
     const trimmedCategory = category.trim();
-    const trimmedLabel = label.trim();
+    const parsedQuantity = Number(quantity);
 
-    if (!trimmedName) return;
+    if (
+      !trimmedName ||
+      !Number.isInteger(parsedQuantity) ||
+      parsedQuantity < 1
+    ) {
+      return;
+    }
 
     setIsSaving(true);
     setError(null);
@@ -716,14 +1028,18 @@ function CreateObjectForm({
       return;
     }
 
-    const { data: objectInstance, error: instanceError } = await supabase
-      .from("object_instances")
-      .insert({
+    const instancesToCreate = Array.from(
+      { length: parsedQuantity },
+      (_, index) => ({
         object_id: object.id,
-        label: trimmedLabel || `${trimmedName} #1`,
-      })
-      .select("id")
-      .single();
+        label: `${trimmedName} #${index + 1}`,
+      }),
+    );
+
+    const { data: objectInstances, error: instanceError } = await supabase
+      .from("object_instances")
+      .insert(instancesToCreate)
+      .select("id");
 
     if (instanceError) {
       setError(instanceError.message);
@@ -733,10 +1049,12 @@ function CreateObjectForm({
 
     const { error: showObjectError } = await supabase
       .from("show_object_instances")
-      .insert({
-        show_id: showId,
-        object_instance_id: objectInstance.id,
-      });
+      .insert(
+        (objectInstances ?? []).map((objectInstance) => ({
+          show_id: showId,
+          object_instance_id: objectInstance.id,
+        })),
+      );
 
     setIsSaving(false);
 
@@ -747,38 +1065,41 @@ function CreateObjectForm({
 
     setName("");
     setCategory("");
-    setLabel("");
+    setQuantity("1");
     router.refresh();
   }
 
   return (
-    <form onSubmit={createObject} className="grid gap-2 sm:grid-cols-4">
+    <form onSubmit={createObject} className="grid gap-2 lg:grid-cols-[1fr_1fr_8rem_auto]">
       <input
         value={name}
         onChange={(event) => setName(event.target.value)}
         placeholder={t.objectType}
-        className="rounded-lg border px-3 py-2 text-sm"
+        className="h-10 rounded-xl border border-stone-300 bg-white px-3 text-sm outline-none transition focus:border-stone-500 focus:ring-4 focus:ring-stone-200"
+      />
+      <CategoryPicker
+        category={category}
+        categories={categories}
+        locale={locale}
+        onCategoryChange={setCategory}
+        onCreateCategory={onCreateCategory}
       />
       <input
-        value={category}
-        onChange={(event) => setCategory(event.target.value)}
-        placeholder={t.category}
-        className="rounded-lg border px-3 py-2 text-sm"
-      />
-      <input
-        value={label}
-        onChange={(event) => setLabel(event.target.value)}
-        placeholder={t.physicalLabel}
-        className="rounded-lg border px-3 py-2 text-sm"
+        type="number"
+        min="1"
+        value={quantity}
+        onChange={(event) => setQuantity(event.target.value)}
+        placeholder={t.quantity}
+        className="h-10 rounded-xl border border-stone-300 bg-white px-3 text-sm outline-none transition focus:border-stone-500 focus:ring-4 focus:ring-stone-200"
       />
       <button
         type="submit"
         disabled={isSaving}
-        className="rounded-lg bg-black px-3 py-2 text-sm text-white disabled:opacity-50"
+        className="h-10 rounded-xl bg-stone-950 px-4 text-sm font-medium text-white transition hover:bg-stone-800 disabled:opacity-50"
       >
         {isSaving ? t.adding : t.addObject}
       </button>
-      {error && <p className="sm:col-span-4 text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-red-600 lg:col-span-4">{error}</p>}
     </form>
   );
 }
@@ -847,21 +1168,21 @@ function CreatePieceForm({
   }
 
   return (
-    <form onSubmit={createPiece} className="flex flex-wrap gap-2">
+    <form onSubmit={createPiece} className="grid gap-2 sm:grid-cols-[1fr_auto]">
       <input
         value={name}
         onChange={(event) => setName(event.target.value)}
         placeholder={t.pieceName}
-        className="min-w-64 rounded-lg border px-3 py-2 text-sm"
+        className="h-10 rounded-xl border border-stone-300 bg-white px-3 text-sm outline-none transition focus:border-stone-500 focus:ring-4 focus:ring-stone-200"
       />
       <button
         type="submit"
         disabled={isSaving}
-        className="rounded-lg bg-black px-3 py-2 text-sm text-white disabled:opacity-50"
+        className="h-10 rounded-xl bg-stone-950 px-4 text-sm font-medium text-white transition hover:bg-stone-800 disabled:opacity-50"
       >
         {isSaving ? t.adding : t.addPiece}
       </button>
-      {error && <p className="basis-full text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-red-600 sm:col-span-2">{error}</p>}
     </form>
   );
 }
@@ -983,6 +1304,110 @@ async function updatePieceOrderSafely(
     .eq("id", piece.id);
 
   return finalError?.message ?? null;
+}
+
+async function reconcileObjectQuantity(
+  showId: string,
+  objectGroup: ObjectGroup,
+  objectName: string,
+  quantity: number,
+): Promise<string | null> {
+  const currentQuantity = objectGroup.instances.length;
+
+  if (quantity === currentQuantity) {
+    return null;
+  }
+
+  if (quantity > currentQuantity) {
+    const instancesToCreate = Array.from(
+      { length: quantity - currentQuantity },
+      (_, index) => ({
+        object_id: objectGroup.objectId,
+        label: `${objectName} #${currentQuantity + index + 1}`,
+      }),
+    );
+
+    const { data: newInstances, error: instanceError } = await supabase
+      .from("object_instances")
+      .insert(instancesToCreate)
+      .select("id");
+
+    if (instanceError) return instanceError.message;
+
+    const { error: showObjectError } = await supabase
+      .from("show_object_instances")
+      .insert(
+        (newInstances ?? []).map((instance) => ({
+          show_id: showId,
+          object_instance_id: instance.id,
+        })),
+      );
+
+    return showObjectError?.message ?? null;
+  }
+
+  const instancesToDelete = objectGroup.instances
+    .slice(quantity)
+    .map((instance) => instance.object_instance_id);
+
+  return await deleteObjectInstances(instancesToDelete);
+}
+
+async function deleteObjectGroup(
+  objectGroup: ObjectGroup,
+): Promise<string | null> {
+  const instanceIds = objectGroup.instances.map(
+    (instance) => instance.object_instance_id,
+  );
+
+  const instanceDeleteError = await deleteObjectInstances(instanceIds);
+
+  if (instanceDeleteError) {
+    return instanceDeleteError;
+  }
+
+  const { error: objectError } = await supabase
+    .from("objects")
+    .delete()
+    .eq("id", objectGroup.objectId);
+
+  return objectError?.message ?? null;
+}
+
+async function deleteObjectInstances(
+  objectInstanceIds: string[],
+): Promise<string | null> {
+  if (objectInstanceIds.length === 0) {
+    return null;
+  }
+
+  const { error: pieceObjectError } = await supabase
+    .from("piece_object_instances")
+    .delete()
+    .in("object_instance_id", objectInstanceIds);
+
+  if (pieceObjectError) return pieceObjectError.message;
+
+  const { error: actionObjectError } = await supabase
+    .from("action_object_instances")
+    .delete()
+    .in("object_instance_id", objectInstanceIds);
+
+  if (actionObjectError) return actionObjectError.message;
+
+  const { error: showObjectError } = await supabase
+    .from("show_object_instances")
+    .delete()
+    .in("object_instance_id", objectInstanceIds);
+
+  if (showObjectError) return showObjectError.message;
+
+  const { error: instanceError } = await supabase
+    .from("object_instances")
+    .delete()
+    .in("id", objectInstanceIds);
+
+  return instanceError?.message ?? null;
 }
 
 async function deleteShowTransitions(showId: string): Promise<string | null> {

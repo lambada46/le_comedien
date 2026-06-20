@@ -125,30 +125,38 @@ export default async function PiecePage({ params }: PageProps) {
   }));
 
   return (
-    <main className="mx-auto max-w-5xl space-y-8 p-8">
-      <Link
-        href={`/shows/${show.id}`}
-        className="text-sm text-zinc-500 hover:underline"
-      >
-        Back
-      </Link>
+    <main className="min-h-screen px-5 py-8 sm:px-8">
+      <div className="mx-auto max-w-5xl space-y-8">
+        <header className="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm">
+          <Link
+            href={`/shows/${show.id}`}
+            className="text-sm font-medium text-stone-500 hover:text-stone-950"
+          >
+            Back
+          </Link>
 
-      <header>
-        <p className="text-sm text-zinc-500">{show.name}</p>
-        <h1 className="text-3xl font-bold">{piece.name}</h1>
-      </header>
+          <div className="mt-5">
+            <p className="mb-2 text-xs font-medium uppercase tracking-[0.18em] text-stone-500">
+              {show.name}
+            </p>
+            <h1 className="text-4xl font-semibold tracking-tight text-stone-950">
+              {piece.name}
+            </h1>
+          </div>
+        </header>
 
-      <PieceDetailWorkspace
-        piece={piece}
-        members={typedShowMembers}
-        objectInstances={typedShowObjectInstances}
-        incidents={incidents ?? []}
-        piecePerformers={(piecePerformers ?? []) as PiecePerformer[]}
-        pieceObjectAssignments={
-          (pieceObjectAssignments ?? []) as PieceObjectAssignment[]
-        }
-        pieceIncidents={pieceIncidents ?? []}
-      />
+        <PieceDetailWorkspace
+          piece={piece}
+          members={typedShowMembers}
+          objectInstances={typedShowObjectInstances}
+          incidents={incidents ?? []}
+          piecePerformers={(piecePerformers ?? []) as PiecePerformer[]}
+          pieceObjectAssignments={
+            (pieceObjectAssignments ?? []) as PieceObjectAssignment[]
+          }
+          pieceIncidents={pieceIncidents ?? []}
+        />
+      </div>
     </main>
   );
 }

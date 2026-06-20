@@ -173,7 +173,8 @@ export default async function ShowPage({ params }: PageProps) {
   }
 
   return (
-    <main className="mx-auto max-w-5xl space-y-8 p-8">
+    <main className="min-h-screen px-5 py-8 sm:px-8">
+      <div className="mx-auto max-w-6xl">
       <ShowWorkspace
         show={show as Show}
         pieces={(pieces ?? []) as Piece[]}
@@ -186,6 +187,7 @@ export default async function ShowPage({ params }: PageProps) {
           (pieceObjectAssignments ?? []) as PieceObjectAssignment[]
         }
       />
+      </div>
     </main>
   );
 }
